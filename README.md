@@ -1,0 +1,2 @@
+# omok-ai
+omok-ai
