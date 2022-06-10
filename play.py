@@ -6,14 +6,14 @@ import onnxruntime
 import models
 
 
-def play(agent=2):
+def play(agent_player=2):
     net = models.Tower()
     net.load_state_dict(torch.load('logs/model_t_augment_10.pth'))
     net = net.eval()
 
     game = omok.OmokGame()
     while game():
-        if game.env.get_player() == agent:
+        if game.env.get_player() == agent_player:
             state = game.env.get_state()
             player = game.env.get_player()
             opponent = player ^ 3
@@ -27,25 +27,32 @@ def play(agent=2):
             result = game.env(action)
 
 
-def play_onnx(agent=2):
-    ort_session = onnxruntime.InferenceSession('./logs/model.onnx')
+class Agent:
+    def __init__(self, model_path):
+        self.session = onnxruntime.InferenceSession(model_path)
+
+    def __call__(self, state, player):
+        opponent = player ^ 3
+        board = np.int8(state == player) - np.int8(state == opponent)
+        x = board.astype(np.float32)
+        x = np.reshape(x, (1, 1, 15, 15))
+        outs = self.session.run(None, {'input': x})
+        action = np.argmax(outs[0].squeeze())
+        return action
+
+
+def play_onnx(agent_player=2):
+    agent = Agent('./logs/model.onnx')
 
     game = omok.OmokGame()
     while game():
-        if game.env.get_player() == agent:
+        if game.env.get_player() == agent_player:
             state = game.env.get_state()
             player = game.env.get_player()
-            opponent = player ^ 3
-            board = np.int8(state == player) - np.int8(state == opponent)
-
-            x = board.astype(np.float32)
-            x = np.reshape(x, (1, 1, 15, 15))
-            ort_inputs = {ort_session.get_inputs()[0].name: x}
-            ort_outs = ort_session.run(None, ort_inputs)
-            out = ort_outs[0].squeeze()
-            action = np.argmax(out)
+            action = agent(state, player)
             result = game.env(action)
 
 
 if __name__ == '__main__':
-    play_onnx(agent=2)
+    play()
+    play_onnx()
