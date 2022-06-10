@@ -6,8 +6,8 @@ import models
 
 
 def play(agent=2):
-    net = models.TestNet()
-    net.load_state_dict(torch.load('logs/model.pth'))
+    net = models.Tower()
+    net.load_state_dict(torch.load('logs/model_t_100.pth'))
     net = net.eval()
 
     game = omok.OmokGame()

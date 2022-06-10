@@ -6,6 +6,8 @@ import numpy as np
 from tqdm import tqdm
 from urllib import request
 
+import augment
+
 download_links = [
     'https://gomocup.org/static/tournaments/2018/results/gomocup2018results.zip',
     'https://gomocup.org/static/tournaments/2019/results/gomocup2019results.zip',
@@ -104,6 +106,34 @@ def make_dataset(
         np.save(f, moves)
 
 
-if __name__ == '__main__':
+def augment_data(
+    data_path='data/data.npy',
+    save_path='data/data_augmented.npy',
+):
+    with open(data_path, 'rb') as f:
+        states = np.load(f)
+        moves = np.load(f)
+
+    states_augmented = []
+    moves_augmented = []
+    for state, move in tqdm(zip(states, moves)):
+        s, m = augment.augment(state, move)
+        states_augmented.extend(s)
+        moves_augmented.extend(m)
+
+    states_augmented = np.asarray(states_augmented)
+    moves_augmented = np.asarray(moves_augmented)
+
+    with open(save_path, 'wb') as f:
+        np.save(f, states_augmented)
+        np.save(f, moves_augmented)
+
+
+def data():
     prepare_data()
     make_dataset()
+    augment_data()
+
+
+if __name__ == '__main__':
+    data()

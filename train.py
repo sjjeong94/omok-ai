@@ -36,7 +36,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 def train(
-    data_path='./data/data.npy',
+    data_path='./data/data_augmented.npy',
     logs_path='./logs',
     seed=1234,
     epochs=10,
