@@ -30,7 +30,7 @@ def convert(
         #dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
     )
 
-    ort_session = onnxruntime.InferenceSession('./logs/model.onnx')
+    ort_session = onnxruntime.InferenceSession(onnx_path)
 
     def to_numpy(tensor):
         return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
@@ -45,4 +45,5 @@ def convert(
 
 
 if __name__ == '__main__':
-    convert()
+    convert('logs/model_t_100.pth', 'logs/model_t_100.onnx')
+    convert('logs/model_t_augment_10.pth', 'logs/model_t_augment_10.onnx')
