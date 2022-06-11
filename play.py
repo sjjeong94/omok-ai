@@ -32,6 +32,17 @@ class Agent:
         self.session = onnxruntime.InferenceSession(model_path)
 
     def __call__(self, state, player):
+        if np.random.rand() < 0.5:
+            # Random Transpose
+            state_t = state.T
+            action_t = self.inference(state_t, player)
+            y, x = divmod(action_t, 15)
+            action = x * 15 + y
+        else:
+            action = self.inference(state, player)
+        return action
+
+    def inference(self, state, player):
         opponent = player ^ 3
         board = np.int8(state == player) - np.int8(state == opponent)
         x = board.astype(np.float32)
@@ -42,7 +53,7 @@ class Agent:
 
 
 def play_onnx(agent_player=2):
-    agent = Agent('./logs/model.onnx')
+    agent = Agent('./logs/model_t_augment_20.onnx')
 
     game = omok.OmokGame()
     while game():
@@ -54,5 +65,5 @@ def play_onnx(agent_player=2):
 
 
 if __name__ == '__main__':
-    play()
+    # play()
     play_onnx()

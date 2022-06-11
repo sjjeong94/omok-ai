@@ -2,6 +2,7 @@ import time
 import omok
 import numpy as np
 import onnxruntime
+from tqdm import tqdm
 
 
 class Agent:
@@ -33,33 +34,42 @@ def rollout(agent1_path, agent2_path):
     agent1 = Agent(agent1_path)
     agent2 = Agent(agent2_path)
 
-    max_count = 1000
+    num_games = 1000
     count = 0
-    win_agent1 = 0
+    win1 = 0
+    win2 = 0
+    tie = 0
 
     env = omok.Omok()
-    while True:
-        state = env.get_state()
-        player = env.get_player()
 
-        if player == 1:
-            action = agent1(state, player)
-        else:
-            action = agent2(state, player)
+    for _ in tqdm(range(num_games)):
+        env.reset()
 
-        result = env(action)
-        # env.show_state()
-        # time.sleep(0.01)
-        if result:
-            count += 1
-            if env.get_winner() == 1:
-                win_agent1 += 1
-            env.reset()
-            print('%d / %d' % (count, max_count))
-            if count >= max_count:
+        while True:
+            state = env.get_state()
+            player = env.get_player()
+
+            if player == 1:
+                action = agent1(state, player)
+            else:
+                action = agent2(state, player)
+
+            result = env(action)
+            if result:
                 break
 
-    print('1 Win -> ', win_agent1 / count)
+        count += 1
+        winner = env.get_winner()
+        if winner == 1:
+            win1 += 1
+        elif winner == 2:
+            win2 += 1
+        else:
+            tie += 1
+
+    print('Player 1 Win -> ', win1 / num_games)
+    print('Player 2 Win -> ', win2 / num_games)
+    print('Tie          -> ', tie / num_games)
 
 
 def rollout_view(agent1_path, agent2_path):
@@ -82,7 +92,13 @@ def rollout_view(agent1_path, agent2_path):
 
 
 if __name__ == '__main__':
-    rollout_view(
-        agent2_path='logs/model_t_100.onnx',
+    rollout(
         agent1_path='logs/model_t_augment_10.onnx',
+        agent2_path='logs/model_t_augment_20.onnx'
     )
+    '''
+    rollout_view(
+        agent1_path='logs/model_t_augment_10.onnx',
+        agent2_path='logs/model_t_augment_20.onnx',
+    )
+    '''
