@@ -45,6 +45,4 @@ def convert(
 
 
 if __name__ == '__main__':
-    convert('logs/model_t_100.pth', 'logs/model_t_100.onnx')
-    convert('logs/model_t_augment_10.pth', 'logs/model_t_augment_10.onnx')
-    convert('logs/model_t_augment_20.pth', 'logs/model_t_augment_20.onnx')
+    convert()

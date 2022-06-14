@@ -8,7 +8,7 @@ import models
 
 def test():
 
-    net = models.TestNet()
+    net = models.Tower()
     net.load_state_dict(torch.load('logs/model.pth'))
     net = net.eval()
 
