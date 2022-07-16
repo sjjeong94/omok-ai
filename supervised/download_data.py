@@ -63,7 +63,7 @@ def download_data(
         logs.append(log)
 
     dirname, basename = os.path.split(save_path)
-    os.makedirs(dirname)
+    os.makedirs(dirname, exist_ok=True)
     with open(save_path, 'w') as f:
         json.dump(logs, f, separators=(',', ':'))
 

@@ -102,5 +102,5 @@ def train(
 
 if __name__ == '__main__':
     train(
-        epochs=100,
+        epochs=10,
     )

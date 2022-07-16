@@ -3,7 +3,7 @@ import omok
 import numpy as np
 from tqdm import tqdm
 
-import augment
+import augmentation
 
 
 def make_dataset(
@@ -54,7 +54,7 @@ def augment_data(
     for i in tqdm(range(len(states))):
         state = states[i]
         move = moves[i]
-        s, m = augment.augment(state, move)
+        s, m = augmentation.augment(state, move)
         states_augmented.extend(s)
         moves_augmented.extend(m)
 
